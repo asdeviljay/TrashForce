@@ -35,7 +35,7 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-ProjectVersion.txt
-LastSceneManagerSetup.txt
-CurrentLayout.dwlt
-assetDatabase3
+TrashForce\ProjectSettings\ProjectVersion.txt
+TrashForce\Library\LastSceneManagerSetup.txt
+TrashForce\Library\CurrentLayout.dwlt
+TrashForce\Library\assetDatabase3
