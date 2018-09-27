@@ -34,3 +34,8 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+ProjectVersion.txt
+LastSceneManagerSetup.txt
+CurrentLayout.dwlt
+assetDatabase3
