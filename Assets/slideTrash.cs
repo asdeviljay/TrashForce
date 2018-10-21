@@ -8,8 +8,14 @@ public class slideTrash : MonoBehaviour {
 
 	Vector3 mouseDown;
 	Vector3 mouseUp;
+
+	Vector2 dist;
+	float posX;
+	float posY;
+	bool onCollision = false;
+
 	string trashToBin;
-	public float speed = 10.0f;
+	//public float speed = 10.0f;
 	public TrashMeneger tm;
 	Rigidbody2D rb2d;
 	SpriteRenderer sr;
@@ -17,7 +23,7 @@ public class slideTrash : MonoBehaviour {
 	Vector3 spawnPos;
 
 	void Start () {
-		rb2d = GetComponent<Rigidbody2D> ();
+		//rb2d = GetComponent<Rigidbody2D> ();	//For SlideTrash Code
 		sr = GetComponent<SpriteRenderer> ();
 		bc2d = GetComponent<BoxCollider2D> ();
 		spawnPos = transform.position;
@@ -34,7 +40,27 @@ public class slideTrash : MonoBehaviour {
 		//rb2d.AddForce (new Vector2 (Camera.main.ScreenToWorldPoint (mouseUp).x - Camera.main.ScreenToWorldPoint (mouseDown).x, Camera.main.ScreenToWorldPoint (mouseUp).y- Camera.main.ScreenToWorldPoint (mouseDown).y));
 	}
 
+	// DragTrash Code
 	void OnMouseDown () {
+		dist = Camera.main.WorldToScreenPoint (transform.position);
+		posX = Input.mousePosition.x - dist.x;
+		posY = Input.mousePosition.y - dist.y;
+	}
+
+	void OnMouseDrag () {
+		Vector2 curPos = new Vector2 (Input.mousePosition.x - posX, Input.mousePosition.y - posY);
+		Vector2 worldPos = Camera.main.ScreenToWorldPoint (curPos);
+		if (!onCollision)
+			transform.position = worldPos;
+	}
+
+	void OnMouseUp () {
+		onCollision = false;
+		transform.position = Vector3.zero + spawnPos;
+	}
+
+	// SlideTrash Code
+	/*void OnMouseDown () {
 		//Debug.Log ("Click Me");
 		mouseDown = Input.mousePosition;
 	}
@@ -48,21 +74,20 @@ public class slideTrash : MonoBehaviour {
 		//rb2d.AddTorque (speed);
 		//rb2d.MovePosition (new Vector2 (mouseUp.x - mouseDown.x, mouseUp.y - mouseDown.y));
 		//rb2d.AddForce (new Vector2 (Camera.main.ScreenToWorldPoint (mouseUp).x - Camera.main.ScreenToWorldPoint (mouseDown).x, Camera.main.ScreenToWorldPoint (mouseUp).y- Camera.main.ScreenToWorldPoint (mouseDown).y));
-	}
+	}*/
 
 	void OnTriggerEnter2D (Collider2D collision) {
 		//Debug.Log ("Hit Me");
-		if (collision.gameObject.name == "Bin1" && trashToBin == "Recycle") {
-			tm.Correct ();
-			ResetTrash ();
-		} else if (collision.gameObject.name == "Bin2" && trashToBin == "Danger") {
-			tm.Correct ();
-			ResetTrash ();
-		} else if (collision.gameObject.name == "Bin3" && trashToBin == "Organic") {
-			tm.Correct ();
-			ResetTrash ();
-		} else if (collision.gameObject.name == "Edge") {
-			tm.Incorrect ();
+		if (collision.gameObject.layer == 14) {
+			onCollision = true;
+			if (collision.gameObject.name == "Bin1" && trashToBin == "Recycle")
+				tm.Correct ();
+			else if (collision.gameObject.name == "Bin2" && trashToBin == "Danger")
+				tm.Correct ();
+			else if (collision.gameObject.name == "Bin3" && trashToBin == "Organic")
+				tm.Correct ();
+			else
+				tm.Incorrect ();
 			ResetTrash ();
 		}
 	}
@@ -70,24 +95,24 @@ public class slideTrash : MonoBehaviour {
 	void ResetTrash () {
 		int ran = Random.Range (0, tm.GetTrashesLenght ());
 		trashToBin = tm.GetBinName (ran);
+		sr.sprite = null;
 		sr.sprite = tm.GetTrashImage (ran);
 		bc2d.size = sr.size;
 		//transform.position = Vector3.zero + Vector3.up * 2;
 		spawnPos += Vector3.forward * 0.03f;
 		transform.position = Vector3.zero + spawnPos;
-		rb2d.velocity = Vector2.zero;
+		//onCollision = false;
+		//rb2d.velocity = Vector2.zero;	//For SlideTrash Code
 	}
 
 	void End () {
-		//gameObject.SetActive (false);
-		//rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
-		rb2d.bodyType = RigidbodyType2D.Static;
+		onCollision = true;
+		//rb2d.bodyType = RigidbodyType2D.Static;	//For SlideTrash Code
 	}
 
 	void Restart () {
-		//gameObject.SetActive (true);
-		//rb2d.constraints = RigidbodyConstraints2D.None;
-		rb2d.bodyType = RigidbodyType2D.Kinematic;
+		onCollision = false;
+		//rb2d.bodyType = RigidbodyType2D.Kinematic;	//For SlideTrash Code
 		transform.position = Vector3.zero + spawnPos;
 	}
 }
