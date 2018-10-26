@@ -40,17 +40,17 @@ public class slideTrash : MonoBehaviour {
 
 	void Update () {
 		//rb2d.AddForce (new Vector2 (Camera.main.ScreenToWorldPoint (mouseUp).x - Camera.main.ScreenToWorldPoint (mouseDown).x, Camera.main.ScreenToWorldPoint (mouseUp).y- Camera.main.ScreenToWorldPoint (mouseDown).y));
-		//Debug.Log(onCollision);
 	}
 
 	// DragTrash Code
 	void OnMouseDown () {
 		isClick = true;
-		dist = Camera.main.WorldToScreenPoint(transform.position);
+		dist = Camera.main.WorldToScreenPoint (transform.position);
 		posX = Input.mousePosition.x - dist.x;
 		posY = Input.mousePosition.y - dist.y;
 		oldPos = new Vector2(dist.x, dist.y);
-		FindObjectOfType<AudioManager>().PlayOnce("Grabing");
+		if (!onCollision)
+			FindObjectOfType<AudioManager>().PlayOnce("Grabing");
 	}
 
 	void OnMouseDrag () {
@@ -101,14 +101,33 @@ public class slideTrash : MonoBehaviour {
 		if (collision.gameObject.layer == 14) {
 			onCollision = true;
 			isClick = false;
-			if (collision.gameObject.name == "Bin1" && trashToBin == "Danger")
+			if (collision.gameObject.name == "Bin1" && trashToBin == "Danger") {
+				Animator c = collision.GetComponentInChildren (typeof(Animator)) as Animator;
+				c.SetTrigger ("CorrectTrigger");
 				tm.Correct ();
-			else if (collision.gameObject.name == "Bin2" && trashToBin == "Recycle")
+			} else if (collision.gameObject.name == "Bin2" && trashToBin == "Recycle") {
+				Animator c = collision.GetComponentInChildren (typeof(Animator)) as Animator;
+				c.SetTrigger ("CorrectTrigger");
 				tm.Correct ();
-			else if (collision.gameObject.name == "Bin3" && trashToBin == "Organic")
+			} else if (collision.gameObject.name == "Bin3" && trashToBin == "Organic") {
+				Animator c = collision.GetComponentInChildren (typeof(Animator)) as Animator;
+				c.SetTrigger ("CorrectTrigger");
 				tm.Correct ();
-			else
+			}
+			else {
 				tm.Incorrect ();
+				if (collision.gameObject.name == "Bin1") {
+					Component[] c = collision.GetComponentsInChildren(typeof(SpriteRenderer));
+					StartCoroutine(StartCountdown (2.0f, c[1] as SpriteRenderer));
+				} else if (collision.gameObject.name == "Bin2") {
+					Component[] c = collision.GetComponentsInChildren(typeof(SpriteRenderer));
+					StartCoroutine(StartCountdown (2.0f, c[1] as SpriteRenderer));
+				}
+				else if (collision.gameObject.name == "Bin3") {
+					Component[] c = collision.GetComponentsInChildren(typeof(SpriteRenderer));
+					StartCoroutine(StartCountdown (2.0f, c[1] as SpriteRenderer));
+				}
+			}
 			ResetTrash ();
 		}
 	}
@@ -145,8 +164,17 @@ public class slideTrash : MonoBehaviour {
 		return isClick;
 	}
 
-	public bool OnCollision()
-	{
+	public bool OnCollision() {
 		return onCollision;
+	}
+
+	IEnumerator StartCountdown (float timeUp = 2.0f, SpriteRenderer sr = null) {
+		float curTimeUp = timeUp;
+		sr.color = new Color (1, 1, 1, 1);
+		while (curTimeUp > 0) {
+			yield return new WaitForSecondsRealtime (1.0f);
+			curTimeUp--;
+		}
+		sr.color = new Color (1, 1, 1, 0);
 	}
 }
