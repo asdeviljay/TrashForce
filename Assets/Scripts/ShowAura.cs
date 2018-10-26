@@ -18,7 +18,7 @@ public class ShowAura : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (CompoTrash.IsClick() && !CompoTrash.OnCollision()) {
+		if (CompoTrash.IsClick () && !CompoTrash.OnCollision()) {
 			Vector2 cts = CompoTrash.GetSpriteSize ();
 			curSprite.sprite = storeImage;
 			curSprite.size = new Vector2 (cts.x * 1.05f, cts.y * 1.05f);

@@ -32,17 +32,16 @@ public class TrashMeneger : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		int ran = Random.Range(1, 4);
-		switch (ran)
-		{
-			case 1:
-				FindObjectOfType<AudioManager>().Play("PlayingTheme");
-				break;
-			case 2:
-				FindObjectOfType<AudioManager>().Play("PlayingTheme2");
-				break;
-			case 3:
-				FindObjectOfType<AudioManager>().Play("PlayingTheme3");
-				break;
+		switch (ran) {
+		case 1:
+			FindObjectOfType<AudioManager>().Play("PlayingTheme");
+			break;
+		case 2:
+			FindObjectOfType<AudioManager>().Play("PlayingTheme2");
+			break;
+		case 3:
+			FindObjectOfType<AudioManager>().Play("PlayingTheme3");
+			break;
 		}
 		StartCoroutine (StartCountdown ());
 	}
@@ -50,12 +49,12 @@ public class TrashMeneger : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (isTimeUp || life == 0) {
-			if (!isSoundGameOver){
-				FindObjectOfType<AudioManager>().Stop("PlayingTheme");
-				FindObjectOfType<AudioManager>().Stop("PlayingTheme2");
-				FindObjectOfType<AudioManager>().Stop("PlayingTheme3");
-				FindObjectOfType<AudioManager>().Stop("MaxComboTheme");
-				FindObjectOfType<AudioManager>().PlayOnce("GameOver");
+			if (!isSoundGameOver) {
+				FindObjectOfType<AudioManager> ().Stop ("PlayingTheme");
+				FindObjectOfType<AudioManager> ().Stop ("PlayingTheme2");
+				FindObjectOfType<AudioManager> ().Stop ("PlayingTheme3");
+				FindObjectOfType<AudioManager> ().Stop ("MaxComboTheme");
+				FindObjectOfType<AudioManager> ().PlayOnce ("GameOver");
 				isSoundGameOver = true;
 			}
 			timeUpText.text = "0";
@@ -65,6 +64,7 @@ public class TrashMeneger : MonoBehaviour {
 			foreach (GameObject cui in canvasUI)
 				cui.SetActive (true);
 			BroadcastMessage ("End");
+
 		} else {
 			foreach (GameObject cui in canvasUI)
 				cui.SetActive (false);
@@ -85,23 +85,18 @@ public class TrashMeneger : MonoBehaviour {
 		else 
 			for (int i = 0 ; i < lifeImage.Length ; i++)
 				lifeImage [i].GetComponent<SpriteRenderer> ().sprite = normalLifeImage;
-		if (isPause == true)
-		{
+		if (isPause)
 			BroadcastMessage("End");
-		}
 	}
 
 	IEnumerator StartCountdown (float timeUp = 60.0f) {
 		curTimeUp = timeUp;
 		while (curTimeUp > 0 && !isTimeUp) {
-			if (isPause == true)
-			{
+			if (isPause) {
 				yield return null;
-			}
-			else
-			{
-				timeUpText.text = curTimeUp.ToString();
-				yield return new WaitForSecondsRealtime(1.0f);
+			} else {
+				timeUpText.text = curTimeUp.ToString ();
+				yield return new WaitForSecondsRealtime (1.0f);
 				curTimeUp--;
 			}
 		}
@@ -112,14 +107,11 @@ public class TrashMeneger : MonoBehaviour {
 	IEnumerator StartCombo (float addComboTime) {
 		curComboTime += addComboTime;
 		while (curComboTime > 0) {
-			if (isPause == true)
-			{
+			if (isPause) {
 				yield return null;
-			}
-			else
-			{
-				comboTimeText.text = curComboTime.ToString();
-				yield return new WaitForSecondsRealtime(0.1f);
+			} else {
+				comboTimeText.text = curComboTime.ToString ();
+				yield return new WaitForSecondsRealtime (0.1f);
 				curComboTime -= 0.1f;
 			}
 		}
@@ -160,13 +152,12 @@ public class TrashMeneger : MonoBehaviour {
 				scoreMul = 4;
 				showCombo.sprite = comboMultiplier [2];
 			} else if (countToMul < 15) {
-				if (scoreMul == 4)
-				{
-					FindObjectOfType<AudioManager>().Play("Combo5");
-					FindObjectOfType<AudioManager>().Pause("PlayingTheme");
-					FindObjectOfType<AudioManager>().Pause("PlayingTheme2");
-					FindObjectOfType<AudioManager>().Pause("PlayingTheme3");
-					FindObjectOfType<AudioManager>().Play("MaxComboTheme");
+				if (scoreMul == 4) {
+					FindObjectOfType<AudioManager> ().Play ("Combo5");
+					FindObjectOfType<AudioManager> ().Pause ("PlayingTheme");
+					FindObjectOfType<AudioManager> ().Pause ("PlayingTheme2");
+					FindObjectOfType<AudioManager> ().Pause ("PlayingTheme3");
+					FindObjectOfType<AudioManager> ().Play ("MaxComboTheme");
 				}
 				scoreMul = 5;
 				showCombo.sprite = comboMultiplier [3];
@@ -196,7 +187,6 @@ public class TrashMeneger : MonoBehaviour {
 		scoreText.text = score.ToString();
 		isCombo = true;
 		FindObjectOfType<AudioManager>().Play("Correct");
-		//FindObjectOfType<AudioManager>().PlayOneShot("Correct", 1.0f);
 	}
 
 	public void Incorrect () {
@@ -207,22 +197,20 @@ public class TrashMeneger : MonoBehaviour {
 		life--;
 		showCombo.sprite = null;
 		FindObjectOfType<AudioManager>().Play("Incorrect");
-		//FindObjectOfType<AudioManager>().PlayOneShot("Incorrect", 0.9f);
 	}
 
 	public void NewGame () {
 		int ran = Random.Range(1, 4);
-		switch (ran)
-		{
-			case 1:
-				FindObjectOfType<AudioManager>().Play("PlayingTheme");
-				break;
-			case 2:
-				FindObjectOfType<AudioManager>().Play("PlayingTheme2");
-				break;
-			case 3:
-				FindObjectOfType<AudioManager>().Play("PlayingTheme3");
-				break;
+		switch (ran) {
+		case 1:
+			FindObjectOfType<AudioManager> ().Play ("PlayingTheme");
+			break;
+		case 2:
+			FindObjectOfType<AudioManager> ().Play ("PlayingTheme2");
+			break;
+		case 3:
+			FindObjectOfType<AudioManager> ().Play ("PlayingTheme3");
+			break;
 		}
 		if (int.Parse (highScoreText.text) < score)
 			highScoreText.text = score.ToString ();
@@ -239,35 +227,27 @@ public class TrashMeneger : MonoBehaviour {
 		StartCoroutine (StartCountdown ());
 	}
 
-	public void Pause()
-	{
-		if (FindObjectOfType<AudioManager>().IsPlaying("MaxComboTheme"))
-		{
-			FindObjectOfType<AudioManager>().Pause("MaxComboTheme");
-		}
-		else {
-			FindObjectOfType<AudioManager>().Pause("PlayingTheme");
-			FindObjectOfType<AudioManager>().Pause("PlayingTheme2");
-			FindObjectOfType<AudioManager>().Pause("PlayingTheme3");
+	public void Pause() {
+		if (FindObjectOfType<AudioManager> ().IsPlaying ("MaxComboTheme")) {
+			FindObjectOfType<AudioManager> ().Pause ("MaxComboTheme");
+		} else {
+			FindObjectOfType<AudioManager> ().Pause ("PlayingTheme");
+			FindObjectOfType<AudioManager> ().Pause ("PlayingTheme2");
+			FindObjectOfType<AudioManager> ().Pause ("PlayingTheme3");
 		}
 		isPause = true;
-		BroadcastMessage("End");
+		BroadcastMessage ("End");
 	}
 
-	public void UnPause()
-	{
-		if (FindObjectOfType<AudioManager>().IsPause("MaxComboTheme"))
-		{
-			FindObjectOfType<AudioManager>().UnPause("MaxComboTheme");
-		}
-		else
-		{
-			FindObjectOfType<AudioManager>().UnPause("PlayingTheme");
-			FindObjectOfType<AudioManager>().UnPause("PlayingTheme2");
-			FindObjectOfType<AudioManager>().UnPause("PlayingTheme3");
+	public void UnPause() {
+		if (FindObjectOfType<AudioManager> ().IsPause ("MaxComboTheme")) {
+			FindObjectOfType<AudioManager> ().UnPause ("MaxComboTheme");
+		} else {
+			FindObjectOfType<AudioManager> ().UnPause ("PlayingTheme");
+			FindObjectOfType<AudioManager> ().UnPause ("PlayingTheme2");
+			FindObjectOfType<AudioManager> ().UnPause ("PlayingTheme3");
 		}
 		isPause = false;
-		BroadcastMessage("Restart");
+		BroadcastMessage ("Restart");
 	}
-
 }
