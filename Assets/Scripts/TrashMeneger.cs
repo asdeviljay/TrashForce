@@ -8,20 +8,28 @@ public class TrashMeneger : MonoBehaviour {
 	public GameObject[] canvasUI;
 	float curTimeUp;
 	float curComboTime = 2.0f;
+	float tempComboTime;
 	int countToMul = 0;
 	int scoreMul = 1;
 	bool isTimeUp = false;
 	bool isCombo = false;
 	bool isPause = false;
 	bool isSoundGameOver = false;
+	bool isUltimateUsed = false;
+	bool isSubmit = false;
 	int score = 0;
 	int life = 3;
+	int countToUltimate = 0;
+	public int countUltimate = 10;
 	public Trashes t;
 	public Text timeUpText;
-	public Text comboTimeText;
-	public Text comboTimeText2;
+	public GameObject comboTimeBarParent;
+	public Image comboTimeBar;
+	public Image UltimateBar;
 	public Text scoreText;
 	public Text highScoreText;
+	public InputField LeaderText;
+	public GameObject Transparent;
 	public float addComboTime = 1.0f;
 	public GameObject[] lifeImage;
 	public Sprite normalLifeImage;
@@ -31,6 +39,7 @@ public class TrashMeneger : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		PlayerPrefs.DeleteAll ();
 		int ran = Random.Range(1, 4);
 		switch (ran) {
 		case 1:
@@ -61,21 +70,24 @@ public class TrashMeneger : MonoBehaviour {
 			curTimeUp = 1.0f;
 			isTimeUp = true;
 			isCombo = false;
-			foreach (GameObject cui in canvasUI)
-				cui.SetActive (true);
+			if(!isSubmit)
+				foreach (GameObject cui in canvasUI)
+					cui.SetActive (true);
+			Component[] c = FindObjectsOfType<SpawnWorm> ();
+			foreach (SpawnWorm b in c)
+				b.End ();
 			BroadcastMessage ("End");
 
 		} else {
 			foreach (GameObject cui in canvasUI)
 				cui.SetActive (false);
 		}
-		if (!isCombo) {
-			comboTimeText.gameObject.SetActive (false);
-			comboTimeText2.gameObject.SetActive (false);
-		} else {
-			comboTimeText.gameObject.SetActive (true);
-			comboTimeText2.gameObject.SetActive (true);
-		}
+		if (!isCombo)
+			comboTimeBarParent.SetActive (false);
+		else 
+			comboTimeBarParent.SetActive (true);
+		if (countToUltimate >= countUltimate && isUltimateUsed)
+			StartCoroutine (StartUltimate ());
 		if (life == 2)
 			lifeImage [0].GetComponent<SpriteRenderer> ().sprite = lifeBreakImage;
 		else if (life == 1)
@@ -92,7 +104,7 @@ public class TrashMeneger : MonoBehaviour {
 	IEnumerator StartCountdown (float timeUp = 60.0f) {
 		curTimeUp = timeUp;
 		while (curTimeUp > 0 && !isTimeUp) {
-			if (isPause) {
+			if (isPause || isUltimateUsed) {
 				yield return null;
 			} else {
 				timeUpText.text = curTimeUp.ToString ();
@@ -106,13 +118,16 @@ public class TrashMeneger : MonoBehaviour {
 
 	IEnumerator StartCombo (float addComboTime) {
 		curComboTime += addComboTime;
+		tempComboTime = curComboTime;
 		while (curComboTime > 0) {
 			if (isPause) {
 				yield return null;
 			} else {
-				comboTimeText.text = curComboTime.ToString ();
-				yield return new WaitForSecondsRealtime (0.1f);
-				curComboTime -= 0.1f;
+				comboTimeBar.fillAmount = curComboTime / tempComboTime;
+				float deltaTime = Time.deltaTime;
+				// yield return new WaitForSecondsRealtime(deltaTime);
+				yield return null;
+				curComboTime -= deltaTime;
 			}
 		}
 		showCombo.sprite = null;
@@ -127,30 +142,64 @@ public class TrashMeneger : MonoBehaviour {
 		FindObjectOfType<AudioManager>().UnPause("PlayingTheme3");
 	}
 
-	void AddAndCheckToMul () {
-		score += scoreMul;
-		countToMul++;
-		curComboTime += addComboTime;
+	IEnumerator StartUltimate(float ultimateTime = 5.0f) {
+		countToUltimate = 0;
+		float curUltimateTime = ultimateTime;
+		Transparent.SetActive (true);
+		while (curUltimateTime > 0) {
+			if (isPause) {
+				yield return null;
+			} else {
+				UltimateBar.fillAmount = curUltimateTime / ultimateTime;
+				yield return new WaitForSecondsRealtime (0.1f);
+				curUltimateTime -= 0.1f;
+			}
+		}
+		countToUltimate = 0;
+		isUltimateUsed = false;
+		Transparent.SetActive (false);
+	}
+
+	public void UseUltimate () {
+		if (countToUltimate >= countUltimate) {
+			isUltimateUsed = true;
+			CheckToMul ();
+		}
+	}
+
+	void CheckToMul () {
 		if (isCombo) {
 			if (countToMul < 1) {
 				scoreMul = 1;
-				showCombo.sprite = null;
+				if(isUltimateUsed)
+					showCombo.sprite = comboMultiplier [4];
+				else
+					showCombo.sprite = null;
 			}
 			else if (countToMul < 3) {
 				if (scoreMul == 1)
 					FindObjectOfType<AudioManager>().Play("Combo2");
 				scoreMul = 2;
-				showCombo.sprite = comboMultiplier [0];
+				if(isUltimateUsed)
+					showCombo.sprite = comboMultiplier [5];
+				else
+					showCombo.sprite = comboMultiplier [0];
 			} else if (countToMul < 7) {
 				if (scoreMul == 2)
 					FindObjectOfType<AudioManager>().Play("Combo3");
 				scoreMul = 3;
-				showCombo.sprite = comboMultiplier [1];
+				if(isUltimateUsed)
+					showCombo.sprite = comboMultiplier [6];
+				else
+					showCombo.sprite = comboMultiplier [1];
 			} else if (countToMul < 11) {
 				if (scoreMul == 3)
 					FindObjectOfType<AudioManager>().Play("Combo4");
 				scoreMul = 4;
-				showCombo.sprite = comboMultiplier [2];
+				if(isUltimateUsed)
+					showCombo.sprite = comboMultiplier [7];
+				else
+					showCombo.sprite = comboMultiplier [2];
 			} else if (countToMul < 15) {
 				if (scoreMul == 4) {
 					FindObjectOfType<AudioManager> ().Play ("Combo5");
@@ -160,9 +209,23 @@ public class TrashMeneger : MonoBehaviour {
 					FindObjectOfType<AudioManager> ().Play ("MaxComboTheme");
 				}
 				scoreMul = 5;
-				showCombo.sprite = comboMultiplier [3];
+				if(isUltimateUsed)
+					showCombo.sprite = comboMultiplier [8];
+				else
+					showCombo.sprite = comboMultiplier [3];
 			}
 		}
+	}
+
+	void AddAndCheckToMul () {
+		if (isUltimateUsed)
+			score += scoreMul * 2;
+		else
+			score += scoreMul;
+		countToMul++;
+		curComboTime += addComboTime;
+		tempComboTime = curComboTime;
+		CheckToMul ();
 	}
 
 	public int GetTrashesLenght () {
@@ -181,9 +244,18 @@ public class TrashMeneger : MonoBehaviour {
 		if (isCombo) {
 			AddAndCheckToMul ();
 		} else {
-			score++;
+			if (isUltimateUsed) {
+				score += 2;
+				showCombo.sprite = comboMultiplier [4];
+			} else
+				score++;
 			StartCoroutine (StartCombo (addComboTime));
 		}
+		if (isUltimateUsed)
+			countToUltimate = 0;
+		else
+			countToUltimate++;
+		UltimateBar.fillAmount = (float)countToUltimate / countUltimate;
 		scoreText.text = score.ToString();
 		isCombo = true;
 		FindObjectOfType<AudioManager>().Play("Correct");
@@ -192,6 +264,7 @@ public class TrashMeneger : MonoBehaviour {
 	public void Incorrect () {
 		isCombo = false;
 		curComboTime = 0.0f;
+		comboTimeBar.fillAmount = curComboTime / tempComboTime;
 		countToMul = 0;
 		scoreMul = 1;
 		life--;
@@ -214,6 +287,9 @@ public class TrashMeneger : MonoBehaviour {
 		}
 		if (int.Parse (highScoreText.text) < score)
 			highScoreText.text = score.ToString ();
+		Component[] c = FindObjectsOfType<SpawnWorm> ();
+		foreach (SpawnWorm b in c)
+			b.NewGame ();
 		BroadcastMessage ("Restart");
 		score = 0;
 		scoreText.text = score.ToString();
@@ -221,9 +297,12 @@ public class TrashMeneger : MonoBehaviour {
 		curComboTime = 2.0f;
 		countToMul = 0;
 		scoreMul = 1;
+		countToUltimate = 0;
 		isTimeUp = false;
 		isCombo = false;
 		isSoundGameOver = false;
+		isUltimateUsed = false;
+		isSubmit = false;
 		StartCoroutine (StartCountdown ());
 	}
 
@@ -235,6 +314,9 @@ public class TrashMeneger : MonoBehaviour {
 			FindObjectOfType<AudioManager> ().Pause ("PlayingTheme2");
 			FindObjectOfType<AudioManager> ().Pause ("PlayingTheme3");
 		}
+		Component[] c = FindObjectsOfType<SpawnWorm> ();
+		foreach (SpawnWorm b in c)
+			b.Pause ();
 		isPause = true;
 		BroadcastMessage ("End");
 	}
@@ -247,7 +329,19 @@ public class TrashMeneger : MonoBehaviour {
 			FindObjectOfType<AudioManager> ().UnPause ("PlayingTheme2");
 			FindObjectOfType<AudioManager> ().UnPause ("PlayingTheme3");
 		}
+		Component[] c = FindObjectsOfType<SpawnWorm> ();
+		foreach (SpawnWorm b in c)
+			b.UnPause ();
 		isPause = false;
 		BroadcastMessage ("Restart");
+	}
+
+	public void GetLeaderName () {
+		if (LeaderText.text != "") {
+			PlayerPrefs.SetString ("HighScore" + PlayerPrefs.GetInt ("PlayerCount"), LeaderText.text + " " + score);
+			PlayerPrefs.SetInt ("PlayerCount", PlayerPrefs.GetInt ("PlayerCount") + 1);
+			LeaderText.text = "";
+			isSubmit = true;
+		}
 	}
 }
