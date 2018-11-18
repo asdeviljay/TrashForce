@@ -8,18 +8,9 @@ public class LeaderBoardName : MonoBehaviour {
 
 	public Text leaderName;
 	public Text leaderScore;
+	public Text highScore;
 
 	List<string> info = new List<string> ();
-
-	// Use this for initialization
-	/*void Start () {
-		for(int i = 0 ; i < PlayerPrefs.GetInt ("PlayerCount") ; i++) {
-			if (PlayerPrefs.HasKey ("HighScore" + i)) {
-				info.Add (PlayerPrefs.GetString ("HighScore" + i));
-			} 
-		}
-		info.Sort ((x, y) => int.Parse(x.Split(' ')[1]).CompareTo(int.Parse(y.Split(' ')[1])));
-	}*/
 
 	public void ShowName () {
 		int count = 1;

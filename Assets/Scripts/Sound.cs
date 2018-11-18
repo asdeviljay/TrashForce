@@ -10,6 +10,10 @@ public class Sound {
 
 	public bool isPause = false;
 
+	public enum SoundType {SFX,BGM}
+
+	public SoundType soundType;
+
 	[Range(0f, 1f)]
 	public float volume = .75f;
 	[Range(0f, 1f)]

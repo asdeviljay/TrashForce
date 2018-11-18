@@ -5,7 +5,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
 
-	public static AudioManager instance;
+	//public static AudioManager instance;
 
 	public AudioMixerGroup mixerGroup;
 
@@ -13,7 +13,7 @@ public class AudioManager : MonoBehaviour
 
 	void Awake()
 	{
-		if (instance != null)
+		/*if (instance != null)
 		{
 			Destroy(gameObject);
 		}
@@ -21,7 +21,7 @@ public class AudioManager : MonoBehaviour
 		{
 			instance = this;
 			DontDestroyOnLoad(gameObject);
-		}
+		}*/
 
 		foreach (Sound s in sounds)
 		{
@@ -125,10 +125,27 @@ public class AudioManager : MonoBehaviour
 		return s.source.isPlaying;
 	}
 
+	public Sound IsPlayingAnyBGM()
+	{
+		bool isPlayingAny = false;
+		foreach (Sound s in sounds) {
+			isPlayingAny = isPlayingAny || s.source.isPlaying;
+			if (s.source.isPlaying && s.soundType == Sound.SoundType.BGM)
+				return s;
+		}
+		return null;
+	}
+
 	public bool IsPause(string sound)
 	{
 		Sound s = Array.Find(sounds, item => item.name == sound);
 		return s.isPause;
+	}
+
+	public Sound FindSound(string sound)
+	{
+		Sound s = Array.Find(sounds, item => item.name == sound);
+		return s;
 	}
 
 }

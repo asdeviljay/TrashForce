@@ -29,6 +29,7 @@ public class slideTrash : MonoBehaviour {
 		sr = GetComponent<SpriteRenderer> ();
 		bc2d = GetComponent<BoxCollider2D> ();
 		spawnPos = transform.position;
+		RandomTrashPosition ();
 		//tm = GetComponentInParent<TrashMeneger> ();
 		//t = tm.GetTrashes ();
 		int ran = Random.Range (0, tm.GetTrashesLenght ());
@@ -75,7 +76,8 @@ public class slideTrash : MonoBehaviour {
 	void OnMouseUp () {
 		isClick = false;
 		onCollision = false;
-		transform.position = Vector3.zero + spawnPos;
+		//transform.position = Vector3.zero + spawnPos;
+		RandomTrashPosition ();
 		FindObjectOfType<AudioManager>().Stop("Grabing");
 	}
 
@@ -132,7 +134,7 @@ public class slideTrash : MonoBehaviour {
 		}
 	}
 
-	void ResetTrash () {
+	public void ResetTrash () {
 		int ran = Random.Range (0, tm.GetTrashesLenght ());
 		trashToBin = tm.GetBinName (ran);
 		sr.sprite = null;
@@ -140,7 +142,8 @@ public class slideTrash : MonoBehaviour {
 		bc2d.size = sr.size;
 		//transform.position = Vector3.zero + Vector3.up * 2;
 		spawnPos += Vector3.forward * 0.03f;
-		transform.position = Vector3.zero + spawnPos;
+		//transform.position = Vector3.zero + spawnPos;
+		RandomTrashPosition ();
 		//onCollision = false;
 		//rb2d.velocity = Vector2.zero;	//For SlideTrash Code
 	}
@@ -152,8 +155,10 @@ public class slideTrash : MonoBehaviour {
 
 	void Restart () {
 		onCollision = false;
+		ResetTrash ();
 		//rb2d.bodyType = RigidbodyType2D.Kinematic;	//For SlideTrash Code
-		transform.position = Vector3.zero + spawnPos;
+		//transform.position = Vector3.zero + spawnPos;
+		RandomTrashPosition ();
 	}
 
 	public Vector3 GetSpriteSize() {
@@ -176,5 +181,9 @@ public class slideTrash : MonoBehaviour {
 			curTimeUp--;
 		}
 		sr.color = new Color (1, 1, 1, 0);
+	}
+
+	void RandomTrashPosition () {
+		transform.position = (Random.onUnitSphere * 1.5f) + spawnPos;
 	}
 }
