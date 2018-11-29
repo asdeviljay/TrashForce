@@ -5,8 +5,8 @@ using UnityEngine;
 public class StartBGM : MonoBehaviour {
 
 	void Start () {
-		if(!FindObjectOfType<AudioManagerTrans>().IsPlaying("StartBGM"))
-		FindObjectOfType<AudioManagerTrans>().Play("StartBGM");
+		if(!FindObjectOfType<AudioManager>().IsPlaying("StartBGM"))
+		FindObjectOfType<AudioManager>().Play("StartBGM");
 	}
 
 }

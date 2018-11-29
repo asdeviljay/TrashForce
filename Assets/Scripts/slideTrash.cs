@@ -40,6 +40,13 @@ public class slideTrash : MonoBehaviour {
 	}
 
 	void Update () {
+		if (isClick) {
+			bc2d.enabled = false;
+			bc2d.isTrigger = false;
+		} else {
+			bc2d.enabled = true;
+			bc2d.isTrigger = true;
+		}
 		//rb2d.AddForce (new Vector2 (Camera.main.ScreenToWorldPoint (mouseUp).x - Camera.main.ScreenToWorldPoint (mouseDown).x, Camera.main.ScreenToWorldPoint (mouseUp).y- Camera.main.ScreenToWorldPoint (mouseDown).y));
 	}
 
@@ -77,7 +84,7 @@ public class slideTrash : MonoBehaviour {
 		isClick = false;
 		onCollision = false;
 		//transform.position = Vector3.zero + spawnPos;
-		RandomTrashPosition ();
+		//RandomTrashPosition ();
 		FindObjectOfType<AudioManager>().Stop("Grabing");
 	}
 
@@ -99,10 +106,10 @@ public class slideTrash : MonoBehaviour {
 	}*/
 
 	void OnTriggerEnter2D (Collider2D collision) {
-		//Debug.Log ("Hit Me");
-		if (collision.gameObject.layer == 14) {
-			onCollision = true;
-			isClick = false;
+		if (collision.gameObject.layer == 14 && !isClick) {
+			//Debug.Log ("Hit Me");
+			//onCollision = false;
+			//isClick = false;
 			if (collision.gameObject.name == "Bin1" && trashToBin == "Danger") {
 				Animator c = collision.GetComponentInChildren (typeof(Animator)) as Animator;
 				c.SetTrigger ("CorrectTrigger");
@@ -115,22 +122,22 @@ public class slideTrash : MonoBehaviour {
 				Animator c = collision.GetComponentInChildren (typeof(Animator)) as Animator;
 				c.SetTrigger ("CorrectTrigger");
 				tm.Correct ();
-			}
-			else {
+			} else {
 				tm.Incorrect ();
 				if (collision.gameObject.name == "Bin1") {
-					Component[] c = collision.GetComponentsInChildren(typeof(SpriteRenderer));
-					StartCoroutine(StartCountdown (2.0f, c[1] as SpriteRenderer));
+					Component[] c = collision.GetComponentsInChildren (typeof(SpriteRenderer));
+					StartCoroutine (StartCountdown (2.0f, c [1] as SpriteRenderer));
 				} else if (collision.gameObject.name == "Bin2") {
-					Component[] c = collision.GetComponentsInChildren(typeof(SpriteRenderer));
-					StartCoroutine(StartCountdown (2.0f, c[1] as SpriteRenderer));
-				}
-				else if (collision.gameObject.name == "Bin3") {
-					Component[] c = collision.GetComponentsInChildren(typeof(SpriteRenderer));
-					StartCoroutine(StartCountdown (2.0f, c[1] as SpriteRenderer));
+					Component[] c = collision.GetComponentsInChildren (typeof(SpriteRenderer));
+					StartCoroutine (StartCountdown (2.0f, c [1] as SpriteRenderer));
+				} else if (collision.gameObject.name == "Bin3") {
+					Component[] c = collision.GetComponentsInChildren (typeof(SpriteRenderer));
+					StartCoroutine (StartCountdown (2.0f, c [1] as SpriteRenderer));
 				}
 			}
 			ResetTrash ();
+		} else if (collision.gameObject.layer == 15) {
+			RandomTrashPosition ();
 		}
 	}
 
@@ -183,7 +190,11 @@ public class slideTrash : MonoBehaviour {
 		sr.color = new Color (1, 1, 1, 0);
 	}
 
-	void RandomTrashPosition () {
+	public void RandomTrashPosition () {
 		transform.position = (Random.onUnitSphere * 1.5f) + spawnPos;
+	}
+
+	public Vector3 GetPosition () {
+		return transform.position;
 	}
 }

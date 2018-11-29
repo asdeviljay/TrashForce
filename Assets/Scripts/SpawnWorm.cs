@@ -35,6 +35,7 @@ public class SpawnWorm : MonoBehaviour {
 			}
 		}
 		bc2d.enabled = false;
+		bc2d.isTrigger = false;
 		isWormSpawn = true;
 	}
 
@@ -42,6 +43,7 @@ public class SpawnWorm : MonoBehaviour {
 		if (isWormSpawn)
 			FindObjectOfType<AudioManager>().Play("Worm");
 		bc2d.enabled = true;
+		bc2d.isTrigger = true;
 		isWormSpawn = false;
 		wormAnimation.SetBool ("IsSpawn", false);
 		sr.color = new Color (1.0f, 1.0f, 1.0f, 1.0f);
@@ -69,6 +71,7 @@ public class SpawnWorm : MonoBehaviour {
 		curSpawnTime = 0;
 		isWormSpawn = false;
 		bc2d.enabled = true;
+		bc2d.isTrigger = true;
 		wormAnimation.SetBool ("IsSpawn", false);
 		sr.color = new Color (1.0f, 1.0f, 1.0f, 1.0f);
 	}
